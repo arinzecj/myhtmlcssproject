@@ -1,0 +1,804 @@
+Nodejs recap
+
+What is Nodejs
+Nodejs is a javascript web application event driven building tool that allows multiple operation actions at once.
+
+Node.js as a Platform:  Node.js provides a runtime environment and core modules for building server-side applications.
+
+Also know as asynchronous programming
+
+
+Nodejs folder arrangement
+Here's a typical project structure:
+
+project-directory/
+├── app.js (main application file)
+├── public/
+│   ├── index.html
+│   ├── styles.css
+│   └── scripts.js
+├── routes/
+│   ├── index.js
+│   └── users.js
+├── controllers/
+│   └── user.js
+├── middleware/
+│   └── auth.js
+
+
+
+How does Nodejs works?
+
+Browser:The user sends a http request to the server(Post,get,put,delete, etc)
+Routing: Server receives the request and detemines how it should be handled
+Middleware: Server checks the request to confirm logging, authentication, parsing,etc
+Middleware: Server then confirms authentation and passes it to an  event handler 
+Event handler/response generator: Server handles the request and creates a response to the browser
+response Generator: Server sends the response to the browser
+Browser/interpretor: Browser interprets and sent the data to the user.
+
+Each of the above can be arranged in different folder on the server.
+
+A simple breakdown
+
+Browser, server, middleware, routes, controllers, event handlers, routes, server, Browser
+
+
+
+Use of Req and Res Request and Response in Node
+  Common `req` Methods in Node.js
+
+The `req` object in Node.js represents the incoming HTTP request(From the user or the browser). 
+
+It contains various properties and methods(url, header, body and information from page or form) that provide information about the request and allow nodejs to interact with it. 
+
+Here are some of the most commonly used `req` methods:
+
+ #  Request Headers: 
+
+-  `req.headers` : An object containing all the headers sent with the request.(Header can be details about the browser, or content received-text, json,application etc).
+
+  -  Example: 
+    ```javascript
+    console.log(req.headers['user-agent']); // Logs the user's browser information
+    ```
+
+ #  Request Method: 
+
+-  `req.method` : A string indicating the HTTP method used for the request (e.g., `GET`, `POST`, `PUT`, `DELETE`).
+  -  Example: 
+    ```javascript
+    if (req.method === 'GET') {
+      // Handle a GET request
+    } else if (req.method === 'POST') {
+      // Handle a POST request
+    }
+    ```
+
+ #  Request URL: 
+
+-  `req.url` : A string representing the URL that was requested.
+  -  Example: 
+    ```javascript
+    console.log(req.url); // Logs the requested URL (e.g., '/users')
+    ```
+
+ #  Request Body: 
+
+-  `req.body` : An object containing the parsed body of the request (typically used for POST requests).
+  -  Example: 
+    ```javascript
+    if (req.method === 'POST') {
+      const data = req.body;
+      console.log(data);
+    }
+    ```
+    Note that you usually need to use a middleware like `body-parser` to parse the request body for POST requests.
+
+ #  Other Useful Properties: 
+
+-  `req.httpVersion` : The HTTP version used for the request (e.g., '1.1').
+-  `req.socket` : The underlying socket object for the request.
+-  `req.connection` : The HTTP connection object for the request.
+
+These are just a few of the many `req` methods available in Node.js. The specific methods you'll need to use will depend on your application's requirements. By understanding these methods, you can effectively process and respond to incoming requests in your Node.js applications.
+
+
+
+  Common `res` Methods in Node.js
+
+The `res` object in Node.js represents the HTTP response that will be sent back to the client. It provides methods for setting headers, writing data, and ending the response.
+
+ #  Setting Headers: 
+
+-  `res.setHeader(name, value)` : Sets a specific header in the response.
+  -  Example: 
+    ```javascript
+    res.setHeader('Content-Type', 'text/plain');
+    ```
+
+ #  Writing Data: 
+
+-  `res.write(data, [encoding])` : Writes data to the response.
+  -  Example: 
+    ```javascript
+    res.write('Hello, World!');
+    ```
+
+ #  Ending the Response: 
+
+-  `res.end([data], [encoding])` : Ends the response, optionally sending data.
+  -  Example: 
+    ```javascript
+    res.end('Goodbye!');
+    ```
+
+ #  Setting Status Code: 
+
+-  `res.writeHead(statusCode, [headers])` : Sets the status code and optional headers for the response.
+  -  Example: 
+    ```javascript
+    res.writeHead(404, { 'Content-Type': 'text/plain' });
+    res.end('Not Found');
+    ```
+
+ #  Other Useful Methods: 
+
+-  `res.json(data)` : Sends a JSON response.
+-  `res.send(data)` : Sends a response with the given data.
+-  `res.redirect(url)` : Redirects the user to a different URL.
+-  `res.sendFile(path)` : Sends a static file as a response.
+
+By using these methods, you can control the content, status, and headers of the HTTP response sent back to the client.
+
+
+
+Path Method and Properities
+
+  Common `path` Methods and Properties in Node.js
+
+The `path` module in Node.js provides functions for working with file and directory paths. Here are some of the most commonly used methods and properties:
+
+ #  Methods: 
+
+-  `path.join(...paths)` : Joins multiple path segments into a single path.
+  -  Example: 
+    ```javascript
+    const filePath = path.join(__dirname, 'public', 'index.html');
+    ```
+-  `path.basename(path)` : Returns the last portion of a path.
+  -  Example: 
+    ```javascript
+    const filename = path.basename('/path/to/file.txt'); // Returns 'file.txt'
+    ```
+-  `path.dirname(path)` : Returns the directory name of a path.
+  -  Example: 
+    ```javascript
+    const directory = path.dirname('/path/to/file.txt'); // Returns '/path/to'
+    ```
+-  `path.extname(path)` : Returns the file extension of a path.
+  -  Example: 
+    ```javascript
+    const extension = path.extname('/path/to/file.txt'); // Returns '.txt'
+    ```
+-  `path.isAbsolute(path)` : Checks if a path is absolute.
+  -  Example: 
+    ```javascript
+    const isAbsolute = path.isAbsolute('/path/to/file.txt'); // Returns true
+    ```
+-  `path.normalize(path)` : Normalizes a path, resolving '..' and '.' segments.
+  -  Example: 
+    ```javascript
+    const normalizedPath = path.normalize('/path/to/../file.txt'); // Returns '/path/to/file.txt'
+    ```
+-  `path.parse(path)` : Parses a path into its components (root, dir, base, ext).
+  -  Example: 
+    ```javascript
+    const parsedPath = path.parse('/path/to/file.txt');
+    console.log(parsedPath.root); // '/path/to'
+    console.log(parsedPath.base); // 'file.txt'
+    ```
+
+ #  Properties: 
+
+-  `path.sep` : The platform-specific separator character (e.g., `/` on Unix-like systems, `\` on Windows).
+-  `path.delimiter` : The platform-specific delimiter character for multiple paths (e.g., `;` on Windows, `:` on Unix-like systems).
+
+By using these methods and properties, you can effectively manipulate and work with file and directory paths in your Node.js applications.
+
+
+
+Fs module methods and properities
+
+  Common `fs` Methods and Properties in Node.js
+
+The `fs` module provides functions for interacting with the file system in Node.js. Here are some of the most commonly used methods and properties:
+
+ #  File Reading and Writing: 
+
+-  `fs.readFile(path, [options], callback)` : Asynchronously reads a file.
+  -  Example: 
+    ```javascript
+    fs.readFile('file.txt', 'utf8', (err, data) => {
+      if (err) throw err;
+      console.log(data);
+    });
+    ```
+-  `fs.writeFile(path, data, [options], callback)` : Asynchronously writes data to a file.
+  -  Example: 
+    ```javascript
+    fs.writeFile('newfile.txt', 'Hello, world!', (err) => {
+      if (err) throw err;
+      console.log('File written successfully');
+    });
+    ```
+-  `fs.readFileSync(path, [options])` : Synchronously reads a file.
+  -  Example: 
+    ```javascript
+    const data = fs.readFileSync('file.txt', 'utf8');
+    console.log(data);
+    ```
+-  `fs.writeFileSync(path, data, [options])` : Synchronously writes data to a file.
+  -  Example: 
+    ```javascript
+    fs.writeFileSync('newfile.txt', 'Hello, world!');
+    ```
+
+ #  File and Directory Operations: 
+
+-  `fs.mkdir(path, [options], callback)` : Asynchronously creates a directory.
+  -  Example: 
+    ```javascript
+    fs.mkdir('newfolder', { recursive: true }, (err) => {
+      if (err) throw err;
+      console.log('Directory created successfully');
+    });
+    ```
+-  `fs.rmdir(path, [options], callback)` : Asynchronously removes a directory.
+  -  Example: 
+    ```javascript
+    fs.rmdir('oldfolder', { recursive: true }, (err) => {
+      if (err) throw err;
+      console.log('Directory removed successfully');
+    });
+    ```
+-  `fs.rename(oldPath, newPath, callback)` : Asynchronously renames a file or directory.
+  -  Example: 
+    ```javascript
+    fs.rename('oldfile.txt', 'newfile.txt', (err) => {
+      if (err) throw err;
+      console.log('File renamed successfully');
+    });
+    ```
+-  `fs.stat(path, callback)` : Asynchronously gets information about a file or directory.
+  -  Example: 
+    ```javascript
+    fs.stat('file.txt', (err, stats) => {
+      if (err) throw err;
+      console.log(stats.isFile()); // Check if it's a file
+      console.log(stats.isDirectory()); // Check if it's a directory
+    });
+    ```
+
+ #  Asynchronous vs. Synchronous: 
+
+- The `fs` module provides both synchronous and asynchronous versions of many methods. Synchronous methods block the execution of the program until the operation completes, while asynchronous methods use callbacks or promises to handle the operation non-blocking. It's generally recommended to use asynchronous methods for file operations to avoid blocking the event loop.
+
+ Remember:  When working with files, it's important to handle potential errors appropriately using the callback functions or promise-based methods provided by the `fs` module.
+
+
+
+
+
+
+
+What gives Nodejs its abilities
+
+
+Modules give nodejs its abilities, they are like little building blocks or pre-made tools, one can use to create applications. some   modules popularly used are 
+
+Fs, http, express, mongodb, mysql, etc
+
+You can also create your own module, you can do this by creting a .js file and adding a javascript function in it and using "module.exports = "functionName".
+
+Now create another .js file and call your variable using "const "functionName" = require("function file path");, then write "function name(new arguement);
+
+
+
+An example of using a Module: http module
+The http module is used to create http servers to handle request and provide response
+
+Example 1
+const http = require("http"); // imports the http module
+
+http.createServer((req,res) => {//Creates a new server
+  res.statusCode = 200;  //Sets the status code for the response
+  res.setHeader("Content-Type", "text/plain"); //Sets the response content type
+  res.end("Hello Cj"); //Outputs a message to the browser window
+});
+
+const port = 3000; // Creates a poort for the connection
+server.listen(port, () => { //Creats server and address
+console.log("Server is live");
+});
+
+Next example
+
+
+Sends an HTTP request to a specified URL.
+  Takes an `options` object and a callback function as arguments.
+  The `options` object can specify the method, URL, headers, and other properties of the request.
+
+```javascript
+const http = require('http');
+
+const options = {
+hostname: 'api.example.com',
+port: 443,
+path: '/data',
+method: 'GET'
+};
+
+http.request(options, (res) => {
+res.on('data', (chunk) => {
+console.log(`Data: ${chunk}`);
+});
+}).on('error', (err) => {
+console.error(err);
+}).end();
+
+
+Http Module process
+Browser, server, routes, routes/event handlers
+
+Corrected Process:
+
+1.  Browser sends a request:  The browser initiates a request to the server, specifying the desired URL or form data.
+2.  Server receives the request:  The server's HTTP module listens for incoming requests and receives the browser's request.
+3.  Server matches the route:  The server compares the request's URL with defined routes to determine the appropriate route handler.
+4.  Server executes the route handler:  The selected route handler is invoked, processing the request and preparing a response.
+
+
+
+The HTTP module in Node.js can be used to handle the following processes:
+
+ 1. Server: 
+   - Create a basic HTTP server to listen for incoming requests.
+   - Handle the incoming request and response objects.
+
+ 2. Routes: 
+   - Implement basic routing logic using conditional statements to determine which route handler to invoke based on the request URL.
+
+ 3. Routes/Event Handlers: 
+   - Handle route-specific logic and events within the request handler function.
+
+
+
+ In summary,  HTTP module can be used for basic server creation and routing. See below
+
+
+ const http = require('http');
+
+// Server: create a new HTTP server
+const server = http.createServer((req, res) => {
+    // Parse the URL path
+    const url = new URL(req.url, `http://${req.headers.host}`);
+    const pathname = url.pathname;
+
+    // Routes: dispatch the request to the appropriate handler
+    if (pathname === '/about') {
+        handleAboutRequest(req, res);
+    } else if (pathname === '/contact') {
+        handleContactRequest(req, res);
+    } else {
+        handleNotFound(req, res);
+    }
+});
+
+// Route handlers:
+function handleAboutRequest(req, res) {
+    res.writeHead(200, { 'Content-Type': 'text/plain' });
+    res.end('About page');
+}
+
+function handleContactRequest(req, res) {
+    res.writeHead(200, { 'Content-Type': 'text/plain' });
+    res.end('Contact page');
+}
+
+function handleNotFound(req, res) {
+    res.writeHead(404, { 'Content-Type': 'text/plain' });
+    res.end('Not found');
+}
+
+// Listen on port 3000
+const PORT = 3000;
+server.listen(PORT, () => {
+    console.log(`Server listening on port ${PORT}`);
+});
+
+
+
+Here's how it work
+
+1.  HTML Link: 
+   - Imagine you have a link on your HTML page that looks like this:
+     ```html
+     <a href="/about">About Us</a>
+     ```
+   - When the user clicks this link, the browser constructs a URL based on the `href` attribute, which is `/about` in this case.
+
+2.  Browser Request: 
+   - The browser sends a GET request to the server at the specified URL (usually the same domain as the webpage). In this case, the request would be sent to `http://localhost:3000/about` (assuming the server is running on port 3000).
+
+3.  Server-Side Processing: 
+
+   - The Node.js server receives the request and the URL (`/about`).
+   - Everything from here onwards in your code remains identical.
+
+   - The `req.url` property will contain the complete URL (`/about`).
+   - The `parsedUrl` object extraction and access to `pathname` (`"/about"`) will work as before.
+   - The appropriate route handler (`handleAboutRequest` in this case) will be invoked based on the extracted `pathname`.
+
+ Key Point: 
+
+- Whether the URL comes from a form or a link, the server receives the full URL in the `req.url` property and processes it following the same logic in your code. The HTTP module handles both scenarios efficiently.
+
+
+
+
+Another example of http module using html and nodejs
+
+
+Here's a modified example that demonstrates how to send a query parameter from the browser to the server and get a response back:
+
+ index.html: 
+
+```html
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Simple HTTP Request</title>
+</head>
+<body>
+    <form action="/greet" method="GET">
+        <label for="name">Name:</label>
+        <input type="text" id="name" name="name">
+        <button type="submit">Greet</button>
+    </form>
+</body>
+</html>
+```
+
+ server.js: 
+
+Here's the code with comments explaining each step, along with how it interacts with the Node.js process:
+
+```javascript
+// Import required modules
+const http = require('http'); // Import the http module for creating a server
+const url = require('url'); // Import the url module for parsing URLs
+const path = require('path'); // Import the path module for manipulating file paths
+const fs = require('fs'); // Import the fs module for file system operations
+
+// Create an HTTP server
+const server = http.createServer((req, res) => {
+  // Node.js process: When a request arrives (user visits the website), 
+  // this callback function is executed.  
+
+  console.log('Incoming request:', req.url); // Log the requested URL for debugging
+
+  // Parse the requested URL
+  const parsedUrl = new URL(req.url, `http://${req.headers.host}`);
+  const pathname = parsedUrl.pathname;
+
+  // Handle different request types
+  if (pathname === '/greet') {
+    // Handle form submission (greeting request)
+    if (req.method === 'GET') {
+      // Node.js process: Check if the request method is GET (used for forms)
+      const name = parsedUrl.searchParams.get('name'); // Extract the name from the query parameters
+
+      // Send a successful response (200 status code)
+      res.writeHead(200, { 'Content-Type': 'text/plain' });
+      res.end(`Hello, ${name}!`); // Send a personalized greeting message
+    } else {
+      // Handle unsupported request methods (e.g., POST, PUT)
+      res.writeHead(405, { 'Content-Type': 'text/plain' });
+      res.end('Method Not Allowed'); // Send an error message
+    }
+  } else if (req.method === 'GET' && req.url.startsWith('/')) {
+    // Serve static files (HTML, CSS, JS, etc.)
+    const filePath = path.join(__dirname, 'public', pathname); // Construct the file path
+
+    // Node.js process: Read the requested file from the disk
+    fs.readFile(filePath, (err, data) => {
+      if (err) {
+        // Handle file read errors
+        res.writeHead(404, { 'Content-Type': 'text/plain' });
+        res.end('File not found'); // Send a "not found" message
+      } else {
+        // Determine the content type based on file extension (optional)
+        const contentType = getContentType(filePath);
+
+        // Send a successful response with the file content
+        res.writeHead(200, { 'Content-Type': contentType });
+        res.end(data);
+      }
+    });
+  } else {
+    // Handle other request types or invalid paths
+    res.writeHead(404, { 'Content-Type': 'text/plain' });
+    res.end('Not found'); // Send a "not found" message
+  }
+});
+
+// Define the server port
+const PORT = 3000;
+
+// Start the server and log a message
+server.listen(PORT, () => {
+  console.log(`Server listening on port ${PORT}`);
+});
+
+// Optional function to determine content type based on file extension
+function getContentType(filePath) {
+  const mimeTypes = {
+    '.html': 'text/html',
+    '.css': 'text/css',
+    '.js': 'text/javascript',
+    // ... Add more mime types
+  };
+
+  const extname = path.extname(filePath);
+  return mimeTypes[extname] || 'text/plain';
+}
+```
+
+ Explanation: 
+
+1.  Import Modules:  We import necessary modules like `http` for creating a server, `url` for parsing URLs, `path` for manipulating file paths, and `fs` for reading files.
+2.  Create Server:  We create an HTTP server using `http.createServer`. This object listens for incoming requests from clients (web browsers in this case).
+3.  Handle Requests:  The callback function within `createServer` is executed for every incoming request.
+   - We log the requested URL for debugging purposes.
+   - We parse the URL using `url.parse` to extract the requested path (`pathname`).
+4.  Handle Greeting Request (`/greet`): 
+   - We check if the path is `/greet` and the method is `GET` (indicates form submission).
+   - If so, we extract the name from the query parameters using `parsedUrl.searchParams.get
+
+
+
+
+An example of using a Module: fs module
+
+The `fs` module is like a wizard who can read and write books. It helps Node.js read and write files on your computer. 
+
+const fs = require('fs');//imports the fs module
+
+const message = 'This is a secret message.';// creates a message variable
+
+fs.writeFile('secret.txt', message, (err) => {
+//this writes the message to secret.txt
+
+  if (err) throw err;//if it encounters an error it will thrown one
+  console.log('The file was saved!');
+});
+
+
+const fs = require('fs');
+
+fs.readFile('message.txt', 'utf8', (err, data) => {
+  if (err) throw err;
+  console.log(data);
+});
+
+
+const http = require('http');
+const fs = require('fs');
+
+const server = http.createServer((req, res) => {
+  if (req.method === 'POST') {
+	// Handle file upload
+	req.on('data', (chunk) => {
+  	// Process the uploaded file data
+  	fs.writeFile('uploadedFile.txt', chunk, (err) => {
+    	if (err) throw err;
+    	res.end('File uploaded successfully!');
+  	});
+	});
+  } else {
+	// Handle GET requests (display a form)
+	res.statusCode = 200;
+	res.setHeader('Content-Type', 'text/html');
+	res.end(`
+  	<form method="POST" enctype="multipart/form-data">
+    	<input type="file" name="myFile">
+    	<input type="submit" value="Upload">
+  	</form>
+	`);
+  }
+});
+
+server.listen(3000, () => {
+  console.log('Server listening on port 3000');
+});
+
+
+
+An example of using a Module: Express module
+
+Express  is a popular web application framework for Node.js. It provides a set of tools and conventions that make it easier to build web applications.
+
+
+const express = require('express');//This line imports the Express module.
+const app = express();//This creates an Express application
+
+app.get('/', (req, res) => {
+/*This defines a route handler for GET requests to the root path ('/'). The callback function receives the request and response objects.*/
+
+  res.send('Hello, world!');
+//This sends a response to the client with the message "Hello, world!"
+});
+
+app.listen(3000, () => {
+//This starts the Express server listening on port 3000.
+  console.log('Server listening on port 3000');
+});
+
+
+Another example
+
+const express = require('express');
+const app = express();
+
+app.get('/users', (req, res) => {
+  // Get a list of users
+});
+
+app.post('/users', (req, res) => {
+  // Create a new user
+});
+
+app.put('/users/:id', (req, res) => {
+  // Update a user
+});
+
+app.delete('/users/:id', (req, res) => {
+  // Delete a user
+});
+
+app.listen(3000, () => {
+  console.log('Server listening on port 3000');
+});
+
+
+
+Express.js Methods and Properties by Process
+
+   Server Setup and Configuration: 
+
+-  `express()` : Creates an Express application instance.
+-  `app.listen(port)` : Starts the server on the specified port.
+-  `app.set(setting, value)` : Sets application settings (e.g., `'view engine'`, `'views'`).
+
+   Middleware: 
+
+-  `app.use(middleware)` : Applies middleware functions to all incoming requests.
+-  `app.METHOD(path, handler)` : Defines a route handler for a specific HTTP method (e.g., `app.get`, `app.post`).
+-  `router.use(middleware)` : Applies middleware to a specific router.
+
+   Routing: 
+
+-  `app.get(path, handler)` : Defines a GET route handler.
+-  `app.post(path, handler)` : Defines a POST route handler.
+-  `app.put(path, handler)` : Defines a PUT route handler.
+-  `app.delete(path, handler)` : Defines a DELETE route handler.
+-  `app.all(path, handler)` : Defines a handler for all HTTP methods.
+
+   Request and Response Objects: 
+
+-  `req.method` : The HTTP method (e.g., `GET`, `POST`).
+-  `req.url` : The requested URL.
+-  `req.params` : URL parameters.
+-  `req.query` : Query string parameters.
+-  `req.body` : Parsed request body (requires body-parsing middleware).
+-  `res.send(data)` : Sends a response.
+-  `res.json(data)` : Sends a JSON response.
+-  `res.render(view, [locals])` : Renders a template.
+-  `res.status(code)` : Sets the status code of the response.
+
+   Template Rendering: 
+
+-  `app.set('view engine', 'ejs')` : Sets the default template engine.
+-  `res.render(view, [locals])` : Renders a template with the specified locals.
+
+   Error Handling: 
+
+-  `app.use(errorMiddleware)` : Defines an error-handling middleware.
+-  `next(err)` : Passes an error to the next error-handling middleware.
+
+Remember that this is just a partial list, and Express offers many more methods and properties for various use cases. You can refer to the official Express documentation for a comprehensive overview: [https://expressjs.com/](https://expressjs.com/)
+
+
+
+
+
+Example of html to Nodejs reply
+
+Here's the code with comments explaining each step:
+
+Html
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Simple HTTP Request</title>
+</head>
+<body>
+    <form action="/greet" method="GET">
+        <label for="name">Name:</label>
+        <input type="text" id="name" name="name">
+        <button type="submit">Greet</button>
+    </form>
+</body>
+</html>
+
+
+Nodejs code
+// Import the Express module to create a web server framework
+const express = require('express');
+
+// Create an Express application instance
+const app = express();
+
+// Define a route handler for the GET request to '/greet' endpoint
+app.get('/greet', (req, res) => {
+  // Extract the name parameter from the query string
+  const name = req.query.name;
+
+  // Send a response as plain text with a personalized greeting message
+  res.send(`Hello, ${name}!`);
+});
+
+// Use Express to serve static files from the 'public' directory
+app.use(express.static('public'));
+
+// Define the server port
+const PORT = 3000;
+
+// Start the server and log a message when it's ready to accept requests
+app.listen(PORT, () => {
+  console.log(`Server listening on port ${PORT}`);
+});
+```
+
+ Explanation: 
+
+1.  Import Express:  We import the `express` module, which provides the framework for building web applications in Node.js.
+
+2.  Create Express App:  We call `express()` to create an instance of an Express application. This object represents the server itself and will be used to define routes, middleware, and handle requests.
+
+3.  Define Route Handler:  We use `app.get('/greet', ...)` to define a route handler for the `/greet` endpoint. This means that whenever the server receives a GET request to this specific path, the function within the parentheses will be executed.
+
+   -  `req` : This variable represents the incoming HTTP request object. It contains information about the request, such as headers, parameters, and body data.
+
+   -  `res` : This variable represents the HTTP response object. It allows us to send data back to the client (browser).
+
+4.  Extract Name Parameter:  Inside the route handler, we use `req.query.name` to access the value of the `name` parameter from the query string of the request.
+
+5.  Send Response:  We use `res.send()` to send a response back to the client. Here, we use string interpolation to create a personalized greeting message that includes the extracted name.
+
+6.  Serve Static Files:  We use `app.use(express.static('public'))` as middleware to allow Express to serve static files (HTML, CSS, JavaScript) from the `public` directory of our project. Any requests for files within this directory will be handled by Express without the need for further route definitions.
+
+7.  Define Port:  We set the server's port number to `3000`.
+
+8.  Start Server:  We call `app.listen(PORT, ...)` to start the server and listen for incoming requests on the specified port. The callback function logs a message to the console when the server is ready.
+
+This code effectively creates a simple web server using Express.js. It demonstrates how to handle GET requests, extract query parameters, and send responses back to the client.
+
+Thanks
+
+
+
+
+
+
